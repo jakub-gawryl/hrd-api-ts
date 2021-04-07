@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/",
+    "target": "es5",
+    "sourceMap": false,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "lib": ["ES2020"],
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.spec.ts"]
+}

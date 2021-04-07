@@ -1,0 +1,27 @@
+{
+  "name": "hrd-api-ts",
+  "version": "0.1.0",
+  "description": "API integration of the Polish domain registrar - HRD.pl",
+  "author": "Jakub Gawryl",
+  "license": "MIT",
+  "main": "./build/main.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon",
+    "build": "gulp build",
+    "start": "cross-env NODE_ENV=production node ./build/main.js",
+    "test": "./node_modules/jest/bin/jest.js --passWithNoTests"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.22",
+    "cross-env": "^7.0.3",
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.7",
+    "ts-jest": "^26.5.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}

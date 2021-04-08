@@ -1,10 +1,4 @@
-const ESCAPE_MAP = new Map([
-  ['&', '&amp;'],
-  ['<', '&lt;'],
-  ['>', '&gt;'],
-  ['"', '&quot;'],
-  ["'", '&#039;']
-])
+import {URL} from 'node:url'
 
 export namespace Utils {
   /**
@@ -17,4 +11,12 @@ export namespace Utils {
     const bytes = hexStr.match(/.{2}/g).map(str => parseInt(str, 16))
     return Buffer.from(bytes)
   }
+
+  /**
+   * Convert utf8 domains into punycode (ascii)
+   * 
+   * @param     utf8Domain    Domain in UTF8 (eg. http://ヒキワリ.ナットウ.ニホン)
+   * @returns                 ASCII domain (eg. http://xn--nckwd5cta.xn--gckxcpg.xn--idk6a7d)
+   */
+  export const utf8ToPunycode = (utf8Domain: string): string => new URL(utf8Domain).href
 }

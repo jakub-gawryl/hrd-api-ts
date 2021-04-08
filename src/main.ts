@@ -2,6 +2,8 @@ import tls, {TLSSocket} from 'tls'
 import crypto from 'crypto'
 import xml2js from 'xml2js'
 
+import {Utils} from './Utils'
+
 export namespace HRDCommon {
   export interface IConfig {
     login: string;
@@ -11,7 +13,7 @@ export namespace HRDCommon {
 }
 
 export namespace HRDConnection {
-  export interface ILogin {
+  export interface IRequestLogin {
     login: {
       login: string;
       pass: string;
@@ -20,35 +22,193 @@ export namespace HRDConnection {
   }
 }
 
-export namespace HRDPartner {
+export namespace HRDModulePartner {
 
-  export interface IGetBalanceResponse {
+  /**
+   * Params interfaces
+   * */
+
+  /**
+   * Request interfaces
+   * */
+  export interface IRequestGetBalance {
+    partner: {
+      getBalance: null;
+    }
+  }
+
+  export interface IRequestPricingServiceInfo {
+    partner: {
+      getPricingInfo: {
+        name: string;
+      }
+    }
+  }
+
+  export interface IRequestGetPricingsList {
+    partner: {
+      getPricingsList: null;
+    }
+  }
+
+  export interface IRequestGetPricings {
+    partner: {
+      getPricings: null
+    }
+  }
+
+  /**
+   * Response interfaces
+   * */
+  export interface IResponseGetBalance {
+
+    /** Account balance */
     balance: number;
+
+    /** Restricted balance (for ongoing operations) */
     restrictedBalance: number;
   }
 
-  export interface IPricingServiceInfoResponse {
+  export interface IResponsePricingServiceInfo {
     // TODO - check response
   }
 
-  export interface IGetPricingsListResponse {
+  export interface IResponseGetPricingsList {
     // TODO - check response
   }
 
-  export interface IGetPricingsResponse {
+  export interface IResponseGetPricings {
     // TODO - check response
   }
 
 }
 
-// TODO
-// export namespace HRDRequest {}
-// export namespace HRDResponse {}
-//type HRDCreateXml = HRDConnection.ILogin | HRDPartner.IGetBalanceRequest
+export namespace HRDModuleUser {
 
-/* */
+  export enum UserType {
+    PERSON = 'person',
+    COMPANY = 'company',
+    OWNER = 'owner'
+  }
 
-export default class HRDApi{
+  /**
+   * Params interfaces
+   * */  
+  export interface IParamsUserCreate {
+    /** User type */
+    type: UserType;
+
+    /** Entity identification number: either PESEL or NIP */
+    idNumber: string;
+
+    /** Email address */
+    email: string;
+
+    /**
+     * Contact phone (landline / mobile) Used as a contact number in registrant type domain contacts
+     * Format: +CC.XXXXXXXXX, where CC is Country Code
+     * */
+    landlinePhone: string;
+
+    /** User name */
+    name: string;
+
+    /** Street and number of the building / flat */
+    street: string;
+
+    /** Postal code in the correct format for your country */
+    postcode: string;
+
+    /** City */
+    city: string;
+
+    /** Country according to the ISO 3166-1 alpha-2 standard */
+    country: string;
+
+    /** Representative person - used only for type COMPANY */
+    representative?: string;
+    
+    /**
+     * (OPTIONAL) Mobile phone number for internal use
+     * Format: +CC.XXXXXXXXX, where CC is Country Code
+     * */
+    mobilePhone?: string;
+
+    /**
+     * (OPTIONAL) Fax number
+     * Format: +CC.XXXXXXXXX, where CC is Country Code
+     * */
+    fax?: string;
+  }
+
+  export interface IParamsUserUpdate{
+
+    /** Used ID */
+    id: number;
+
+    /**
+     * (OPTIONAL) Mobile phone number for internal use
+     * Format: +CC.XXXXXXXXX, where CC is Country Code
+     * */
+    mobilePhone?: string;
+
+    /**
+     * Contact phone (landline / mobile) Used as a contact number in registrant type domain contacts
+     * Format: +CC.XXXXXXXXX, where CC is Country Code
+     * */
+    landlinePhone?: string;
+
+    /**
+     * (OPTIONAL) Fax number
+     * Format: +CC.XXXXXXXXX, where CC is Country Code
+     * */
+    fax?: string;
+
+    /** Street and number of the building / flat */
+    street?: string;
+
+    /** Postal code in the correct format for your country */
+    postcode?: string;
+
+    /** City */
+    city?: string;
+
+    /** Country according to the ISO 3166-1 alpha-2 standard */
+    country?: string;
+  }
+
+  /**
+   * Request interfaces
+   * */
+   export interface IRequestUserCreate {
+    user: {
+      create: IParamsUserCreate
+    }
+  }
+
+  export interface IRequestUserUpdate {
+    user: {
+      update: IParamsUserUpdate
+    }
+  }
+
+  /**
+   * Response interfaces
+   * */
+  export interface IResponseUserCreate {
+    /** ID of the created user */
+    id: number;
+  }
+
+  export interface IResponseUserUpdate {}
+
+}
+
+type HRDCreateXml = HRDConnection.IRequestLogin 
+| HRDModulePartner.IRequestGetBalance | HRDModulePartner.IRequestPricingServiceInfo | HRDModulePartner.IRequestGetPricingsList | HRDModulePartner.IRequestGetPricings 
+| HRDModuleUser.IRequestUserCreate | HRDModuleUser.IRequestUserUpdate
+
+export default class HRDApi {
 
   protected host = 'api.hrd.pl'
   protected port = 9999
@@ -82,7 +242,7 @@ export default class HRDApi{
 
     // TODO prevent of login twice!
 
-    this.hash = this.hex2bin(hash)
+    this.hash = Utils.hex2bin(hash)
 
     return new Promise((resolve, reject) => {
       const xml = this.createXML({
@@ -120,13 +280,13 @@ export default class HRDApi{
   /**
    * Returns an account balance and the blocked funds for the operations in progress 
    */
-  public partnerGetBalance(): Promise<HRDPartner.IGetBalanceResponse> {
+  public partnerGetBalance(): Promise<HRDModulePartner.IResponseGetBalance> {
     const xml = this.createXML({
       partner: {
         getBalance: null
       }
     })
-     // TODO - See what's in response (and parse it properly to get only data in "IGetBalanceResponse" type)
+     // TODO - See what's in response (and parse it properly to get only data in "IResponseGetBalance" type)
     return this.send(xml)
   }
 
@@ -136,7 +296,7 @@ export default class HRDApi{
    * @param     serviceName   Name of the service
    * @returns 
    */
-  public partnerPricingServiceInfo(serviceName: string): Promise<HRDPartner.IPricingServiceInfoResponse> {
+  public partnerPricingServiceInfo(serviceName: string): Promise<HRDModulePartner.IResponsePricingServiceInfo> {
     const xml = this.createXML({
       partner: {
         getPricingInfo: {
@@ -148,7 +308,7 @@ export default class HRDApi{
   }
 
   // TODO - See what's in response / doc
-  public partnerGetPricingsList(): Promise<HRDPartner.IGetPricingsListResponse> {
+  public partnerGetPricingsList(): Promise<HRDModulePartner.IResponseGetPricingsList> {
     const xml = this.createXML({
       partner: {
         getPricingsList: null
@@ -158,12 +318,61 @@ export default class HRDApi{
   }
 
   // TODO - See what's in response / doc
-  public partnerGetPricings(): Promise<HRDPartner.IGetPricingsResponse> {
+  public partnerGetPricings(): Promise<HRDModulePartner.IResponseGetPricings> {
     const xml = this.createXML({
       partner: {
-        getPricingsList: null
+        getPricings: null
       }
     })
+    return this.send(xml)
+  }
+
+
+  // *************** USER MODULE ***************
+
+  /**
+   * Create new HRD user
+   * 
+   * @param     params
+   * @returns 
+   */
+  public userCreate(params: HRDModuleUser.IParamsUserCreate): Promise<HRDModuleUser.IResponseUserCreate> {
+    const {type, representative = ''} = params
+    
+    delete params.type;
+    delete params.representative;
+
+    // Add representative only if type = COMPANY or OWNER
+    const addRep = [HRDModuleUser.UserType.COMPANY, HRDModuleUser.UserType.OWNER].includes(type);
+
+    const createUserObj = {
+      [`${type}Type`]: null,
+      representative: addRep ? representative : null,
+      ...params
+    }
+
+    const xml = this.createXML({
+      user: {
+        create: createUserObj
+      }
+    })
+
+    return this.send(xml)
+  }
+
+  /**
+   * Update HRD user
+   * 
+   * @param params 
+   * @returns
+   */
+  public userUpdate(params: HRDModuleUser.IParamsUserUpdate): Promise<HRDModuleUser.IResponseUserUpdate> {
+    const xml = this.createXML({
+      user: {
+        update: params
+      }
+    })
+
     return this.send(xml)
   }
 
@@ -254,7 +463,7 @@ export default class HRDApi{
    * @returns           XML string
    */
   // TODO - change to protected
-   public createXML(params: any): string {
+   public createXML(params: HRDCreateXml): string {
     return this.xmlBuilder.buildObject({
       api: {
         $: {xmlns: 'http://api.hrd.pl/api/'},
@@ -284,17 +493,6 @@ export default class HRDApi{
         this.socket = null
       })
     })
-  }
-
-  /**
-   * Converts hex string into buffer
-   * 
-   * @param     hexStr    String to convert eg. "8ef5"
-   * @returns             Buffer
-   */
-  protected hex2bin(hexStr: string): Buffer {
-    const bytes = hexStr.match(/.{2}/g).map(str => parseInt(str, 16))
-    return Buffer.from(bytes)
   }
 
 }

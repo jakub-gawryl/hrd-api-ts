@@ -4,209 +4,220 @@ import xml2js from 'xml2js'
 
 import {Utils} from './Utils'
 
-export namespace HRDCommon {
-  export interface IConfig {
-    login: string;
-    pass: string;
-    hash: string;
-  }
-}
+export namespace HRD {
 
-export namespace HRDConnection {
-  export interface IRequestLogin {
-    login: {
+  export namespace Common {
+
+    export interface IConfig {
       login: string;
       pass: string;
-      type: 'partnerApi';
+      hash: string;
     }
-  }
-}
 
-export namespace HRDModulePartner {
-
-  /**
-   * Params interfaces
-   * */
-
-  /**
-   * Request interfaces
-   * */
-  export interface IRequestGetBalance {
-    partner: {
-      getBalance: null;
-    }
   }
 
-  export interface IRequestPricingServiceInfo {
-    partner: {
-      getPricingInfo: {
-        name: string;
+  export namespace Connection {
+
+    export interface IRequestLogin {
+      login: {
+        login: string;
+        pass: string;
+        type: 'partnerApi';
       }
     }
+
   }
 
-  export interface IRequestGetPricingsList {
-    partner: {
-      getPricingsList: null;
-    }
-  }
+  export namespace Module {
 
-  export interface IRequestGetPricings {
-    partner: {
-      getPricings: null
-    }
-  }
+    export namespace Partner {
 
-  /**
-   * Response interfaces
-   * */
-  export interface IResponseGetBalance {
-
-    /** Account balance */
-    balance: number;
-
-    /** Restricted balance (for ongoing operations) */
-    restrictedBalance: number;
-  }
-
-  export interface IResponsePricingServiceInfo {
-    // TODO - check response
-  }
-
-  export interface IResponseGetPricingsList {
-    // TODO - check response
-  }
-
-  export interface IResponseGetPricings {
-    // TODO - check response
-  }
-
-}
-
-export namespace HRDModuleUser {
-
-  export enum UserType {
-    PERSON = 'person',
-    COMPANY = 'company',
-    OWNER = 'owner'
-  }
-
-  /**
-   * Params interfaces
-   * */  
-  export interface IParamsUserCreate {
-    /** User type */
-    type: UserType;
-
-    /** Entity identification number: either PESEL or NIP */
-    idNumber: string;
-
-    /** Email address */
-    email: string;
-
-    /**
-     * Contact phone (landline / mobile) Used as a contact number in registrant type domain contacts
-     * Format: +CC.XXXXXXXXX, where CC is Country Code
-     * */
-    landlinePhone: string;
-
-    /** User name */
-    name: string;
-
-    /** Street and number of the building / flat */
-    street: string;
-
-    /** Postal code in the correct format for your country */
-    postcode: string;
-
-    /** City */
-    city: string;
-
-    /** Country according to the ISO 3166-1 alpha-2 standard */
-    country: string;
-
-    /** Representative person - used only for type COMPANY */
-    representative?: string;
+      /**
+       * Params interfaces
+       * */
     
-    /**
-     * (OPTIONAL) Mobile phone number for internal use
-     * Format: +CC.XXXXXXXXX, where CC is Country Code
-     * */
-    mobilePhone?: string;
-
-    /**
-     * (OPTIONAL) Fax number
-     * Format: +CC.XXXXXXXXX, where CC is Country Code
-     * */
-    fax?: string;
-  }
-
-  export interface IParamsUserUpdate{
-
-    /** Used ID */
-    id: number;
-
-    /**
-     * (OPTIONAL) Mobile phone number for internal use
-     * Format: +CC.XXXXXXXXX, where CC is Country Code
-     * */
-    mobilePhone?: string;
-
-    /**
-     * Contact phone (landline / mobile) Used as a contact number in registrant type domain contacts
-     * Format: +CC.XXXXXXXXX, where CC is Country Code
-     * */
-    landlinePhone?: string;
-
-    /**
-     * (OPTIONAL) Fax number
-     * Format: +CC.XXXXXXXXX, where CC is Country Code
-     * */
-    fax?: string;
-
-    /** Street and number of the building / flat */
-    street?: string;
-
-    /** Postal code in the correct format for your country */
-    postcode?: string;
-
-    /** City */
-    city?: string;
-
-    /** Country according to the ISO 3166-1 alpha-2 standard */
-    country?: string;
-  }
-
-  /**
-   * Request interfaces
-   * */
-   export interface IRequestUserCreate {
-    user: {
-      create: IParamsUserCreate
+      /**
+       * Request interfaces
+       * */
+      export interface IRequestGetBalance {
+        partner: {
+          getBalance: null;
+        }
+      }
+    
+      export interface IRequestPricingServiceInfo {
+        partner: {
+          getPricingInfo: {
+            name: string;
+          }
+        }
+      }
+    
+      export interface IRequestGetPricingsList {
+        partner: {
+          getPricingsList: null;
+        }
+      }
+    
+      export interface IRequestGetPricings {
+        partner: {
+          getPricings: null
+        }
+      }
+    
+      /**
+       * Response interfaces
+       * */
+      export interface IResponseGetBalance {
+    
+        /** Account balance */
+        balance: number;
+    
+        /** Restricted balance (for ongoing operations) */
+        restrictedBalance: number;
+      }
+    
+      export interface IResponsePricingServiceInfo {
+        // TODO - check response
+      }
+    
+      export interface IResponseGetPricingsList {
+        // TODO - check response
+      }
+    
+      export interface IResponseGetPricings {
+        // TODO - check response
+      }
+    
     }
-  }
 
-  export interface IRequestUserUpdate {
-    user: {
-      update: IParamsUserUpdate
+    export namespace User {
+
+      export enum UserType {
+        PERSON = 'person',
+        COMPANY = 'company',
+        OWNER = 'owner'
+      }
+    
+      /**
+       * Params interfaces
+       * */  
+      export interface IParamsUserCreate {
+        /** User type */
+        type: UserType;
+    
+        /** Entity identification number: either PESEL or NIP */
+        idNumber: string;
+    
+        /** Email address */
+        email: string;
+    
+        /**
+         * Contact phone (landline / mobile) Used as a contact number in registrant type domain contacts
+         * Format: +CC.XXXXXXXXX, where CC is Country Code
+         * */
+        landlinePhone: string;
+    
+        /** User name */
+        name: string;
+    
+        /** Street and number of the building / flat */
+        street: string;
+    
+        /** Postal code in the correct format for your country */
+        postcode: string;
+    
+        /** City */
+        city: string;
+    
+        /** Country according to the ISO 3166-1 alpha-2 standard */
+        country: string;
+    
+        /** Representative person - used only for type COMPANY */
+        representative?: string;
+        
+        /**
+         * (OPTIONAL) Mobile phone number for internal use
+         * Format: +CC.XXXXXXXXX, where CC is Country Code
+         * */
+        mobilePhone?: string;
+    
+        /**
+         * (OPTIONAL) Fax number
+         * Format: +CC.XXXXXXXXX, where CC is Country Code
+         * */
+        fax?: string;
+      }
+    
+      export interface IParamsUserUpdate{
+    
+        /** Used ID */
+        id: number;
+    
+        /**
+         * (OPTIONAL) Mobile phone number for internal use
+         * Format: +CC.XXXXXXXXX, where CC is Country Code
+         * */
+        mobilePhone?: string;
+    
+        /**
+         * Contact phone (landline / mobile) Used as a contact number in registrant type domain contacts
+         * Format: +CC.XXXXXXXXX, where CC is Country Code
+         * */
+        landlinePhone?: string;
+    
+        /**
+         * (OPTIONAL) Fax number
+         * Format: +CC.XXXXXXXXX, where CC is Country Code
+         * */
+        fax?: string;
+    
+        /** Street and number of the building / flat */
+        street?: string;
+    
+        /** Postal code in the correct format for your country */
+        postcode?: string;
+    
+        /** City */
+        city?: string;
+    
+        /** Country according to the ISO 3166-1 alpha-2 standard */
+        country?: string;
+      }
+    
+      /**
+       * Request interfaces
+       * */
+      export interface IRequestUserCreate {
+        user: {
+          create: IParamsUserCreate
+        }
+      }
+    
+      export interface IRequestUserUpdate {
+        user: {
+          update: IParamsUserUpdate
+        }
+      }
+    
+      /**
+       * Response interfaces
+       * */
+      export interface IResponseUserCreate {
+        /** ID of the created user */
+        id: number;
+      }
+    
+      export interface IResponseUserUpdate {}
+    
     }
+
   }
-
-  /**
-   * Response interfaces
-   * */
-  export interface IResponseUserCreate {
-    /** ID of the created user */
-    id: number;
-  }
-
-  export interface IResponseUserUpdate {}
-
 }
 
-type HRDCreateXml = HRDConnection.IRequestLogin 
-| HRDModulePartner.IRequestGetBalance | HRDModulePartner.IRequestPricingServiceInfo | HRDModulePartner.IRequestGetPricingsList | HRDModulePartner.IRequestGetPricings 
-| HRDModuleUser.IRequestUserCreate | HRDModuleUser.IRequestUserUpdate
+type HRDCreateXml = HRD.Connection.IRequestLogin 
+| HRD.Module.Partner.IRequestGetBalance | HRD.Module.Partner.IRequestPricingServiceInfo | HRD.Module.Partner.IRequestGetPricingsList | HRD.Module.Partner.IRequestGetPricings 
+| HRD.Module.User.IRequestUserCreate | HRD.Module.User.IRequestUserUpdate
 
 export default class HRDApi {
 
@@ -237,7 +248,7 @@ export default class HRDApi {
    * @param     config 
    * @returns   Promise object (resolve returns token)
    */
-  public login(config: HRDCommon.IConfig): Promise<string> {
+  public login(config: HRD.Common.IConfig): Promise<string> {
     const {login, pass, hash} = config
 
     // TODO prevent of login twice!
@@ -280,7 +291,7 @@ export default class HRDApi {
   /**
    * Returns an account balance and the blocked funds for the operations in progress 
    */
-  public partnerGetBalance(): Promise<HRDModulePartner.IResponseGetBalance> {
+  public partnerGetBalance(): Promise<HRD.Module.Partner.IResponseGetBalance> {
     const xml = this.createXML({
       partner: {
         getBalance: null
@@ -296,7 +307,7 @@ export default class HRDApi {
    * @param     serviceName   Name of the service
    * @returns 
    */
-  public partnerPricingServiceInfo(serviceName: string): Promise<HRDModulePartner.IResponsePricingServiceInfo> {
+  public partnerPricingServiceInfo(serviceName: string): Promise<HRD.Module.Partner.IResponsePricingServiceInfo> {
     const xml = this.createXML({
       partner: {
         getPricingInfo: {
@@ -308,7 +319,7 @@ export default class HRDApi {
   }
 
   // TODO - See what's in response / doc
-  public partnerGetPricingsList(): Promise<HRDModulePartner.IResponseGetPricingsList> {
+  public partnerGetPricingsList(): Promise<HRD.Module.Partner.IResponseGetPricingsList> {
     const xml = this.createXML({
       partner: {
         getPricingsList: null
@@ -318,7 +329,7 @@ export default class HRDApi {
   }
 
   // TODO - See what's in response / doc
-  public partnerGetPricings(): Promise<HRDModulePartner.IResponseGetPricings> {
+  public partnerGetPricings(): Promise<HRD.Module.Partner.IResponseGetPricings> {
     const xml = this.createXML({
       partner: {
         getPricings: null
@@ -336,14 +347,14 @@ export default class HRDApi {
    * @param     params
    * @returns 
    */
-  public userCreate(params: HRDModuleUser.IParamsUserCreate): Promise<HRDModuleUser.IResponseUserCreate> {
+  public userCreate(params: HRD.Module.User.IParamsUserCreate): Promise<HRD.Module.User.IResponseUserCreate> {
     const {type, representative = ''} = params
     
     delete params.type;
     delete params.representative;
 
     // Add representative only if type = COMPANY or OWNER
-    const addRep = [HRDModuleUser.UserType.COMPANY, HRDModuleUser.UserType.OWNER].includes(type);
+    const addRep = [HRD.Module.User.UserType.COMPANY, HRD.Module.User.UserType.OWNER].includes(type);
 
     const createUserObj = {
       [`${type}Type`]: null,
@@ -366,7 +377,7 @@ export default class HRDApi {
    * @param params 
    * @returns
    */
-  public userUpdate(params: HRDModuleUser.IParamsUserUpdate): Promise<HRDModuleUser.IResponseUserUpdate> {
+  public userUpdate(params: HRD.Module.User.IParamsUserUpdate): Promise<HRD.Module.User.IResponseUserUpdate> {
     const xml = this.createXML({
       user: {
         update: params

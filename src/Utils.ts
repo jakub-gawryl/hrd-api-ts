@@ -1,4 +1,4 @@
-import {URL} from 'node:url'
+import {URL} from "url"
 
 export namespace Utils {
   /**
@@ -18,5 +18,5 @@ export namespace Utils {
    * @param     utf8Domain    Domain in UTF8 (eg. http://ヒキワリ.ナットウ.ニホン)
    * @returns                 ASCII domain (eg. http://xn--nckwd5cta.xn--gckxcpg.xn--idk6a7d)
    */
-  export const utf8ToPunycode = (utf8Domain: string): string => new URL(utf8Domain).href
+  export const utf8DomainToPunycode = (utf8Domain: string): string => new URL(`http://${utf8Domain}`).host
 }

@@ -199,6 +199,22 @@ export namespace HRD {
           update: IParamsUserUpdate
         }
       }
+
+      export interface IRequestUserInfo {
+        user: {
+          info: {
+            id: number;
+          }
+        }
+      }
+
+      export interface IRequestUserList {
+        user: {
+          list: {
+            lastId: number;
+          }
+        }
+      }
     
       /**
        * Response interfaces
@@ -209,6 +225,28 @@ export namespace HRD {
       }
     
       export interface IResponseUserUpdate {}
+
+      export interface IResponseUserInfo {
+
+        /** Entity identification number: either PESEL or NIP */
+        idNumber: string;
+
+        landlinePhone: string;
+        mobilePhone: string;
+        fax: string;
+        name: string;
+        street: string;
+        postcode: string;
+        city: string;
+        country: string;
+        crDate: string;
+        type: UserType;
+        email: string;
+      }
+
+      export interface IResponseUserList {
+        // TODO - check response
+      }
     
     }
 
@@ -217,7 +255,7 @@ export namespace HRD {
 
 type HRDCreateXml = HRD.Connection.IRequestLogin 
 | HRD.Module.Partner.IRequestGetBalance | HRD.Module.Partner.IRequestPricingServiceInfo | HRD.Module.Partner.IRequestGetPricingsList | HRD.Module.Partner.IRequestGetPricings 
-| HRD.Module.User.IRequestUserCreate | HRD.Module.User.IRequestUserUpdate
+| HRD.Module.User.IRequestUserCreate | HRD.Module.User.IRequestUserUpdate | HRD.Module.User.IRequestUserInfo | HRD.Module.User.IRequestUserList
 
 export default class HRDApi {
 
@@ -387,6 +425,43 @@ export default class HRDApi {
     return this.send(xml)
   }
 
+  /**
+   * Get info about single HRD user
+   * 
+   * @param     userId    ID of HRD user
+   * @returns 
+   */
+  public userInfo(userId: number): Promise<HRD.Module.User.IResponseUserInfo> {
+    const xml = this.createXML({
+      user: {
+        info: {
+          id: userId
+        }
+      }
+    })
+
+    return this.send(xml)
+  }
+
+  /**
+   * List HRD user identifiers. Returns unspecified number IDs (max 100 per batch)
+   * Pass last userID from previous batch to get more users.
+   * 
+   * @param     lastUserId    
+   * @returns 
+   */
+  public userList(lastUserId: number = 0): Promise<HRD.Module.User.IResponseUserList> {
+    const xml = this.createXML({
+      user: {
+        list: {
+          lastId: lastUserId
+        }
+      }
+    })
+
+    return this.send(xml)
+  }
+
 
   // *************** UNSUPPORTED ***************
 
@@ -460,6 +535,8 @@ export default class HRDApi {
           }
           resolve(data)
         })
+
+        // TODO - Move closing socket somewhere else (maybe add public destroy() method)
         this.socket.end()
       })
 
@@ -473,8 +550,7 @@ export default class HRDApi {
    * @param   params    Params object
    * @returns           XML string
    */
-  // TODO - change to protected
-   public createXML(params: HRDCreateXml): string {
+   protected createXML(params: HRDCreateXml): string {
     return this.xmlBuilder.buildObject({
       api: {
         $: {xmlns: 'http://api.hrd.pl/api/'},
